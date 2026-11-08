@@ -1,0 +1,23 @@
+# Codemagic: gera as pastas android/ e ios/ na hora (o repo guarda so o codigo Dart).
+workflows:
+  enclave-build:
+    name: Enclave - build de teste
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+    scripts:
+      - name: Criar pastas de plataforma
+        script: flutter create . --platforms=android,ios --project-name enclave --org com.sounavy
+      - name: Dependencias
+        script: flutter pub get
+      - name: Analise
+        script: flutter analyze
+      - name: Build Android (APK debug)
+        script: flutter build apk --debug
+      - name: Build iOS (sem assinatura)
+        script: flutter build ios --release --no-codesign
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+      - build/ios/iphoneos/*.app
