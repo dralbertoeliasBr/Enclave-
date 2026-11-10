@@ -1,0 +1,32 @@
+# Guardião dos Repositórios v1 — 09/11/2026
+# Conceito: Sounavy | Engenharia: Claude
+# Nunca apaga nada. Vigia, avisa, bloqueia e preserva.
+name: Guardião
+
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  schedule:
+    - cron: "17 3 * * *"   # todo dia às 00:17 de Brasília
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  guardiao:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Guardião em ação
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python .github/guardiao/guardiao.py
