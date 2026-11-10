@@ -30,6 +30,7 @@ import urllib.request
 LABEL_OK = "OK-Sounavy"
 DOCS_OBRIGATORIOS = ["README.md", "LICENSE", "CITATION.cff", "AUTORIA.md"]
 RAMO_DIARIO = "guardiao-diario"
+EXTENSOES_TEXTO = (".md", ".txt", ".rst")  # v1.1: documentação não é comando
 PADROES_DESTRUTIVOS = [
     r"\brm\s+-[a-zA-Z]*r[a-zA-Z]*f",     # rm -rf / rm -fr
     r"\brm\s+-[a-zA-Z]*f[a-zA-Z]*r",
@@ -137,6 +138,9 @@ def achar_destrutivos(diff_texto):
             arquivo = linha[6:] if linha.startswith("+++ b/") else linha[4:]
             continue
         if linha.startswith("+") and not linha.startswith("+++"):
+            # v1.1: texto de documentação só descreve comandos, não executa
+            if arquivo.lower().endswith(EXTENSOES_TEXTO):
+                continue
             for p in PADROES_DESTRUTIVOS:
                 if re.search(p, linha, re.IGNORECASE):
                     achados.append((arquivo, linha[1:].strip()[:160], p))
