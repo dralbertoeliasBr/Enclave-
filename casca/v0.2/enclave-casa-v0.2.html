@@ -1,0 +1,516 @@
+<title>Enclave Casa</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a casa vista de cima — a porta do Inox no alto, as 10 boxes em grade, e embaixo as gavetas (dicionário, Black, Doca, teste) */
+:root{
+  --bg:#f2f4f3; --surface:#ffffff; --ink:#18201f; --muted:#5d6967; --line:#d6dddb; --accent:#1f5c57; --accent-soft:#e1eeec;
+  --ok:#2a6a3b; --bad:#b4452f; --bad-soft:#f8e6e1;
+  --c00:#9aa5ad; --c01:#d64545; --c02:#e8833a; --c03:#e0b12a; --c04:#3f9e5a; --c05:#3a7bd5; --c06:#4b3fae; --c07:#8e4fc4; --c08:#141414; --c09:#2b8a85;
+  --display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif; --body:"Inter",-apple-system,system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1514; --surface:#172120; --ink:#e4ecea; --muted:#9aa9a6; --line:#2b3937; --accent:#6fc2b9; --accent-soft:#1c2e2c;
+  --ok:#7fcf92; --bad:#f08a72; --bad-soft:#3a221c; --c08:#e8e8e8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1514; --surface:#172120; --ink:#e4ecea; --muted:#9aa9a6; --line:#2b3937; --accent:#6fc2b9; --accent-soft:#1c2e2c;
+  --ok:#7fcf92; --bad:#f08a72; --bad-soft:#3a221c; --c08:#e8e8e8; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,7vw,42px);line-height:1;margin:0}
+h2{font-family:var(--display);font-weight:600;font-size:20px;margin:0}
+.sub{color:var(--muted);margin:6px 0 0;max-width:62ch;font-size:14px}
+.selo-dic{font:400 12px var(--mono);color:var(--muted);margin-top:8px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.porta{border:2px solid var(--c00)}
+.tag{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+textarea,input[type=password],input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);padding:10px}
+textarea{min-height:120px;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--bg);font:600 14px var(--body);padding:10px 16px;border-radius:10px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.prev{border:1px dashed var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.destino{display:flex;align-items:center;gap:8px;font-weight:600}
+.dot{width:12px;height:12px;border-radius:50%;flex:none;border:1px solid var(--line)}
+.mono{font:400 13px var(--mono);overflow-wrap:anywhere}
+.medidas{font:400 12px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.aviso{color:var(--bad);background:var(--bad-soft);border-radius:8px;padding:8px 10px;font-size:14px}
+.toast{font-size:13px;color:var(--ok);min-height:1.2em}
+.grade{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.grade{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.box{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:10px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);font:inherit;min-width:0}
+.box[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.box .top{display:flex;align-items:center;gap:6px}
+.box .num{font:600 11px var(--mono);color:var(--muted)}
+.box .cor{font-weight:600}
+.box .n{font:600 20px var(--display);font-variant-numeric:tabular-nums}
+.box .g{font-size:12px;color:var(--muted);line-height:1.3}
+.lista{display:flex;flex-direction:column}
+.it{border-top:1px solid var(--line);padding:9px 0;display:flex;flex-direction:column;gap:3px;min-width:0}
+.it .nome{font:600 12px var(--mono);overflow-wrap:anywhere}
+.it .tx{font-size:14px;overflow-wrap:anywhere}
+.it .por{font-size:12px;color:var(--muted)}
+.hint{font-size:13px;color:var(--muted);margin:0}
+details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+summary{cursor:pointer;font-family:var(--display);font-weight:600;font-size:18px}
+details>div{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.res{font:400 12.5px/1.7 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.res .ok{color:var(--ok)} .res .no{color:var(--bad)}
+footer{font-size:12px;color:var(--muted);max-width:75ch}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Enclave</h1>
+    <p class="sub">Joga na porta. O Arquivista lê por dentro, carimba e leva para a caixa certa. O dicionário do ENCLAVE_v5 comprime o que pode viajar.</p>
+    <div class="selo-dic" id="selo-dic">Carregando o dicionário…</div>
+  </header>
+
+  <section class="card porta" aria-label="Porta do Inox">
+    <span class="tag">00 · Inox · a porta</span>
+    <textarea id="entrada" aria-label="O que entra na Casa"></textarea>
+    <p class="hint" id="exemplo">Texto de exemplo. Apague e fale o seu (use o microfone do teclado).</p>
+    <div class="prev" id="prev"></div>
+    <div class="row">
+      <button class="btn" id="guardar">Guardar</button>
+      <button class="btn ghost" id="copiar">Copiar CLXD2</button>
+      <span class="toast" id="toast" role="status"></span>
+    </div>
+  </section>
+
+  <section class="card" aria-label="As 10 boxes">
+    <h2>A Casa</h2>
+    <div class="grade" id="grade"></div>
+    <div id="dentro"></div>
+  </section>
+
+  <details id="g-dic">
+    <summary>Dicionário vivo</summary>
+    <div>
+      <p class="hint">Três camadas: língua (1.800 palavras abertas), especialidade (odontologia) e pessoal (aprende das suas últimas 300 falas). Cada versão nova tem SHA e nunca apaga a anterior, então texto antigo continua abrindo.</p>
+      <div class="row"><button class="btn" id="aprender">Aprender com a Casa</button></div>
+      <div class="lista" id="versoes"></div>
+      <span class="tag">Abrir um texto CLXD2</span>
+      <textarea id="abrir-in" aria-label="Texto CLXD2" style="min-height:80px" placeholder="Cole aqui um CLXD2:… (da casca ou do ENCLAVE_v5 do iPhone)"></textarea>
+      <div class="row"><button class="btn ghost" id="abrir">Abrir</button></div>
+      <div class="mono" id="abrir-out"></div>
+    </div>
+  </details>
+
+  <details id="g-black">
+    <summary>Black</summary>
+    <div>
+      <p class="hint">O privado vai cifrado (AES-GCM) e partido em 3 pedaços; quaisquer 2 reabrem. Nesta casca a senha é de teste (trava falsa, como você decidiu em 06/11). Blindar fica para depois que tudo funcionar.</p>
+      <input type="password" id="senha" aria-label="Senha de teste da Black" value="fake-teste" autocomplete="off">
+      <div class="lista" id="black-lista"></div>
+    </div>
+  </details>
+
+  <details id="g-doca">
+    <summary>Doca</summary>
+    <div><p class="hint">O diário do Arquivista. Só cresce: cada rodada, o que entrou e para onde foi.</p><div class="lista" id="doca"></div></div>
+  </details>
+
+  <details id="g-teste">
+    <summary>Autoteste</summary>
+    <div>
+      <p class="hint">Roda numa Casa separada, sem tocar na sua. Confere também se o dicionário é o mesmo do ENCLAVE_v5 (SHA de fábrica 27f35b93).</p>
+      <div class="row"><button class="btn" id="testar">Rodar os testes</button></div>
+      <div class="res" id="res"></div>
+    </div>
+  </details>
+
+  <details id="g-levar">
+    <summary>Guardar e levar a Casa</summary>
+    <div>
+      <p class="hint">A Casa fica só neste aparelho. Copie e guarde no Drive. Para trazer de volta, cole: soma ao que existe, não apaga nada. A Black vai cifrada.</p>
+      <div class="row"><button class="btn ghost" id="exportar">Copiar a Casa</button></div>
+      <textarea id="importar" aria-label="Colar a Casa" style="min-height:80px" placeholder="Cole aqui a Casa copiada"></textarea>
+      <div class="row"><button class="btn ghost" id="importar-btn">Somar à minha Casa</button></div>
+    </div>
+  </details>
+
+  <footer>Casca v0.2 · 09/11/2026 · conceito de Sounavy, engenharia do Claude. Dicionário e Arquivista portados do ENCLAVE_v5 (06/11/2026); textos CLXD2 abrem dos dois lados quando o dicionário tem o mesmo SHA. A casca v0.1 continua intacta.</footer>
+</div>
+
+<script>// Dados do dicionário do ENCLAVE_v5.py (06/11/2026), copiados sem mudança.
+// LINGUA: 1800 palavras mais frequentes do português do Brasil — FrequencyWords (Hermit Dave, OpenSubtitles 2018, CC-BY-SA 4.0).
+var LINGUA_TXT = "não você para está isso como aqui mais muito estou vamos tudo minha então pode agora quando fazer eles nós tenho estava certo quer sabe quem nada disse onde quero são dizer posso acho sobre porque mesmo coisa todos estão algo até tempo assim nunca vocês esse casa quê essa também ainda tão cara favor melhor noite temos obrigado talvez estamos esta deus alguém mãe vida senhor este isto sempre anos verdade seus dele ficar parece claro depois tinha falar coisas antes pessoas pouco pelo preciso apenas homem deve dois fazendo todo lugar acha fora estar qual disso trabalho precisa hoje ninguém novo queria comigo mundo saber alguma podemos grande sinto seja nossa poderia dinheiro suas será nome quanto qualquer pela outro dela nosso meus desculpe filho certeza vão hora outra sair toda volta problema obrigada olá tipo realmente sabia aconteceu menos mulher algum diga falando espere ótimo carro vezes amigo primeiro deveria seria venha três entre daqui sério voltar parte amor feliz embora família olhe deixar atrás tenha faça pensei ajudar todas olha aquele duas querida frente indo alguns dias lado podem merda pare tarde gosto precisamos caso fique dentro cidade momento pegar foram nenhum gente somos amanhã fosse cabeça gostaria amigos enquanto homens logo deles desde tanto garota pessoa legal rápido algumas cada jeito tentando meio outros têm medo minhas importa irmão errado história primeira quase horas encontrar nova essas pessoal difícil forma contra matar semana dizendo perto demais entrar esses achei deixe vejo polícia espero sido juntos ajuda caminho nisso elas quiser crianças manhã aquela sorte morte pensar papai veja fica teve quarto levar filha feito minutos morto porta tive entendo cima acabou chegar veio água mesma significa teria pronto esposa acredito ouvir gosta morrer nossos olhos garoto última coração contar importante jogo acontecendo razão mãos devo ideia consigo idiota passar havia problemas parar senhora corpo chefe poder mamãe cuidado começar espera ficou conta exatamente arma longe escola tentar pois terra droga ontem pensando única devia sendo causa guerra chance usar marido mão numa trabalhar sangue música esperar querem nenhuma tivesse digo estranho maior velho faço boca houve festa estavam fala mulheres conhece ouvi tirar esperando podia licença capitão preocupe comer fácil deixa novamente além irmã meses eram suficiente pais segundo sabemos muitas cinco bebê matou querido muita idéia saia muitos número deixou conseguir lembra dessa morreu tomar bastante neste maneira quatro filhos acontecer criança dormir durante possa desse vindo certa café possível casamento irá acordo quis equipe conheço ruim culpa jantar provavelmente consegue telefone esteja forte sentir viver chegou diferente sozinho prazer pergunta procurando iria terá conseguiu outras final minuto sala chega único nossas falta desta aquilo incrível devemos direito nessa vivo mudar faria porra perder falou segurança pagar plano descobrir conversar achar próxima sabem comida pegue diabos trás jovem trouxe acreditar olhar cama ponto passado pena colocar tchau nesse fale ouça nele calma filme pedir sente louco palavra pequeno john caras ouviu próximo médico pensa ligar pior força mostrar país acontece fogo entende baixo acabar continuar estiver lembro dizem srta vendo jogar livro adeus perguntar existe manter fazem cedo querer desculpa jack semanas estes começou hospital atenção seis linda último chamar escritório falei estávamos especial comprar após resto fiquei alô saiu ganhar controle fico brincando volte nesta garotas queremos presidente pegou real devem aonde precisar negócio doutor esteve encontro pelos escute finalmente estado cuidar armas aqueles umas dólares fato sentido pequena prisão casar trabalhando escolha puta amiga sozinha próprio cabelo deste estivesse engraçado policial perfeito passou alto palavras livre mente seguro menina própria bonito futuro entendi esqueça respeito entender estará visto estas agente sinal grupo andar presente milhões rosto mesa foto preso leve partir consegui sexo assassino pense chamado daí pediu jesus situação olhando perdeu voltou grandes modo viagem sistema rapazes simples linha achou entendeu estive salvar boas conhecer estaria emprego chama bonita conosco melhores mensagem michael contou idade crime questão trazer usando local simplesmente lindo tente encontrei ficará acredita levou precisam farei doente natal professor odeio rapaz motivo disseram fizeram seguir ótima programa campo normal continue vontade graças menino chão soube acabei perguntas surpresa lista sonho olho terminar irei resposta beber ordem encontrou senhores peguei hotel caixa quente povo acidente erro precisava diria advogado mortos aniversário inferno ataque david charlie vale frank fotos show abrir parabéns fome voce tiver ficando totalmente morta loja naquela energia conversa pelas espaço serviço monte assassinato negócios banco reunião estarei completamente george divertido ligou segunda perdi fundo lutar pudesse explicar fomos tome notícias céu trabalha exército mês mike parecia passa fará continua tire olhada tivemos carta lembrar roupas contato detetive passada fizemos papel área governo abra interessante horrível luta dando beleza certamente apartamento banheiro mudou capaz metade penso funciona tentei procurar tradução velha triste prometo prova barco bons tentou hein quantos senti decisão tenente bebida teremos através conselho avião juro saindo nela tocar breve pronta ligue frio anda missão chave lamento tinham impossível peça igreja namorado terrível maravilhoso namorada haver maioria tendo segredo leva verdadeiro viva naquele saiba roupa sete vítima drogas nave assunto mandou imediatamente diferentes ajude cair fazemos ouro loucura time vidas pobre ouvindo faremos puder vista começa alma aposto desses fazia paul general mestre adoro senhorita celular oficial cavalo companhia somente esquecer james peter parecer serão padre começo louca buscar esperava dito centro época estrada carne vestido posição cheio fugir meninas teste entrou maldito chamada ligação saúde diferença junto planeta duro passo bela proteger longo cachorro chegando embaixo coloque delas guarda escrever conheci cliente igual mandar bater falo pensou basta gostei encontramos porquê costas provar segundos lugares esquerda ambos coronel chame pés direita acredite aprender correr empresa dessas últimos cérebro informação perigo bola acham relação doce desculpas garotos destino sentindo deixei branco quais gostar cerca cerveja resolver serei regras cena creio norte público caiu sentar tiro oportunidade cozinha ficaria inteligente poderíamos toque propósito chá várias base york faculdade humano graça ordens lidar direto comandante cantar henry honra trem ação importo senhoras prontos depressa direção perigoso confiar sargento existem oito animais cheiro experiência clube mary queira volto sonhos esqueci estúpido justo janela corte saco sucesso quantas lixo desejo aceitar pedi deveríamos quão escuta vinho necessário terei preocupado saída dançar poderá rainha comum liberdade pega entendido disto tempos tanta dormindo tribunal chamou verão repente steve parecem vender belo máquina silêncio tínhamos informações receber meia passei mentira paris exemplo contrário raiva aula conseguimos socorro lhes liga escolher tornar cadê humanos ligo preocupar venham atirar azul pressão série perdido jamais vermelho exceto colocou legenda inteiro comando harry cartão paciente diretor esperança ilha câmera notícia errada sarah danny revisão devagar parem achamos banho américa traga conte bolsa excelente andando alta jimmy aquelas bomba adam preço iremos alex vive esconder arte começando jovens passando ocupado bill jane pedido cão sequer parceiro suspeito pele nível opinião pista emergência computador seguinte planos policiais irmãos daquele ônibus batalha nick rádio acaba prefiro tony fiquem perdão haverá livros apesar justiça dança braço costumava will líder cale pego vergonha criar almoço coragem risco pude roubar vários roubou negro espírito cansado defesa gostou principal novos bunda especialmente peço cartas enorme funcionar imaginar inimigo ganhou brilhante entra londres julgamento cheia pernas aparecer longa trata tirou juiz estrela ficam segura piada mora felizes inteira realidade procura relatório dizia saiam sapatos irão estação falamos restaurante responsável merece diante flores carros billy novas viram percebi dúvida conhecemos provas sejam evitar alvo tenham nomes pedaço destruir gato classe apareceu cheguei subir brincar buraco meninos infelizmente soldados gentil herói usou cadeia filmes morrendo acima gelo corrida xerife caramba busca suponho visão estás richard investigação yeah pedindo limpar árvore mentindo soubesse inglês estranha vídeo início fizer correndo endereço prédio tommy tamanho praia vieram nervoso havendo laboratório parede brincadeira amar cortar entrada super johnny descobriu vemos matei natureza metros idiotas testemunha projeto carreira deixando navio limpo comecei código responder gostava movimento ridículo estilo bravo jornal terminou bêbado pedra animal inocente toma mudança escreveu dados poderiam peixe jake americano velhos memória departamento pergunte contigo confiança estrelas absolutamente afinal contas adoraria floresta total dirigir obviamente episódio vimos major pescoço mark olhem preparar mantenha grávida vejam processo clientes entregar temporada diabo cadeira maria soldado esperem pôr tira assistir agradeço coma agradecer eddie chris férias desafio monstro histórias redor sentimentos menor virar perna operação esqueceu chegamos visita caro imagem escapar bala cristo apresentar conhecia distância chorar faca vencer definitivamente particular amava nariz fantástico milhares pontos braços branca dado nove perfeita perguntou beijo quieto prestes decidir troca ficarei verde seguida universo virá abaixo antigo madame passe apoio robert moça mercado imagino escuro bolo conhecido banda detalhes valor recebi doença relógio caminhão médicos rico espécie sabendo culpado presa perdendo dentes barulho tornou ryan cavalos agradável arrumar poucos baby parou máximo política majestade gostam parque kevin ponha leite quebrar concordo discutir desistir comprou levantar perdemos salvou daquela velocidade éramos bobby comece avó cirurgia milhão acesso chaves machucar marca dever cinema vêm relaxe livrar mesmos vento chamam preocupada encontrado ajudou depende ficamos verdadeira acabado recebeu portanto sobreviver fechar ganha permissão jogando noites levando princesa maldição disser vadia ruas possamos briga manda pensava desapareceu vítimas bateu anel pago maldita normalmente parado dono descansar palco maravilhosa come tiveram ponte noiva termos casado língua ouvido peso trocar debaixo fugiu unidos estaremos tomou comprei correto relacionamento obter controlar daniel humana calças martin matt orgulho acordar daria interesse garrafa mostre estados façam mentir dedos eric contrato salvo charles sentado aberta ameaça deveriam esperto corpos americanos conheceu descer vovó perguntando deram casos decidiu futebol camisa odeia forças aparentemente avô descobri querendo brian maiores central nacional sociedade táxi voar luzes agir enviar teoria veremos oferta cansada frança inglaterra preto ligado resultado profissional direi antiga rachel responda traz perda fantasma altura calor devíamos maluco assistente contei vitória perguntei números feita adorável chapéu divertir kelly morar jardim colega verá senão verificar príncipe scott porco mostra pessoalmente natural decidi terão serem enfim fonte motorista confie escolheu visitar diversão universidade terceiro juntar unidade responsabilidade firme artista deixado liguei pesquisa pressa rapidamente momentos consertar legendas anna próximos servir okay usado cala quebrou voltei escrito ficaram casal simon casas oeste tantas larry interessado casaco aberto encontre lisa canção chuva quisesse espada pequenos bordo voltando demorar ensinar achava mata acabamos mentiu jeff acaso portas valeu pensam modelo dedo sábado pertence baile pegamos geral atrasado parada viemos torna ajudando chegaram entanto dão seguindo proteção fita armário chamando thomas washington kate santo crédito segure jogos dói imprensa jason honesto aviso acampamento atirou serve coloquei vovô queriam interessa objetivo grana construir inimigos sensação mande competição militar paga funcionando corra morre orgulhoso tenta besteira nasceu propriedade darei partido enfermeira enviou encontraram roubo apaixonado membro chocolate internet domingo segredos mandei deseja corredor sinais material sexual devido smith acorde lance ovos lago atacar primo toca felicidade saí levante partes membros presos pão carona montanha passagem prefeito confusão peito rock venho inútil vingança topo contente invés ferido humor curso lição aeroporto original sentiu caralho prêmio";
+var ODONTO_TXT = "odontologia dentista paciente consulta consultório anamnese radiografia panorâmica tomografia " +
+  "periapical interproximal bruxismo apertamento articulação temporomandibular disfunção temporomandibular " +
+  "côndilo disco articular masseter temporal pterigóideo músculo mastigação oclusão maloclusão " +
+  "placa miorrelaxante placa oclusal desgaste dentário abfração erosão retração gengival gengiva gengivite " +
+  "periodontite periodonto bolsa periodontal sondagem sangramento raspagem alisamento radicular " +
+  "implante implantes osseointegração enxerto ósseo levantamento de seio pilar protético coroa prótese " +
+  "prótese total prótese parcial removível ponte fixa faceta lente de contato restauração resina composta " +
+  "amálgama ionômero canal tratamento endodôntico endodontia pulpite necrose pulpar abscesso fístula " +
+  "extração exodontia terceiro molar siso incisivo canino pré-molar molar maxila mandíbula palato " +
+  "língua mucosa saliva cárie biofilme flúor profilaxia clareamento ortodontia aparelho alinhador " +
+  "harmonização orofacial toxina botulínica preenchimento ácido hialurônico dor orofacial cefaleia " +
+  "isquemia inflamação crônica plexo venoso pterigoideo anestesia anestésico lidocaína articaína " +
+  "antibiótico amoxicilina analgésico anti-inflamatório ibuprofeno dipirona prescrição orçamento retorno " +
+  "agendamento prontuário odontograma plano de tratamento sensibilidade dentinária hipersensibilidade " +
+  "fratura dentária trinca oclusão cêntrica relação cêntrica guia canina lateralidade protrusão";
+var ODONTO_FRASES = ["articulação temporomandibular", "disfunção temporomandibular", "disco articular",
+  "placa miorrelaxante", "placa oclusal", "desgaste dentário", "retração gengival",
+  "bolsa periodontal", "alisamento radicular", "enxerto ósseo", "levantamento de seio",
+  "pilar protético", "prótese total", "prótese parcial removível", "ponte fixa", "lente de contato",
+  "resina composta", "tratamento endodôntico", "necrose pulpar", "terceiro molar",
+  "harmonização orofacial", "toxina botulínica", "ácido hialurônico", "dor orofacial",
+  "inflamação crônica", "plexo venoso", "plano de tratamento", "sensibilidade dentinária",
+  "fratura dentária", "oclusão cêntrica", "relação cêntrica", "guia canina"];
+if (typeof module !== "undefined") module.exports = {LINGUA_TXT, ODONTO_TXT, ODONTO_FRASES};
+</script>
+<script>// Motor do dicionário em camadas — porte fiel do ENCLAVE_v5.py (06/11/2026) para JavaScript.
+// Conceito: Sounavy. Engenharia: Claude. Formato CLXD2:<8 do SHA>|<corpo>, "~xy" = entrada xy, "~~" = um ~.
+// Um texto comprimido aqui abre no ENCLAVE_v5 do iPhone quando o dicionário tem o mesmo SHA.
+var DIC5 = (function () {
+  var ALFA = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  var TIL = "~", CAB2 = "CLXD2:", MAX_PESSOAL = 1200, JANELA_PESSOAL = 300;
+  var W = "[\\p{L}\\p{N}_]";
+  var RE_OK = new RegExp("^" + W + "([^\\n]*" + W + ")?$", "u");
+  var RE_PAL = new RegExp(W + "+", "gu");
+  var RE_TOK = new RegExp(W + "+|[^\\p{L}\\p{N}_\\s]", "gu");
+  var RE_ALNUM = /^[\p{L}\p{N}]+$/u;
+  var enc = new TextEncoder();
+  function nbytes(s) { return enc.encode(s).length; }
+  function ncp(s) { return Array.from(s).length; }
+  function pyStrip(s) { return s.replace(/^\s+|\s+$/g, ""); }
+  function pySplit(s) { return s.split(/\s+/).filter(function (x) { return x; }); }
+  function cmpPy(a, b) { var A = Array.from(a), B = Array.from(b), n = Math.min(A.length, B.length);
+    for (var i = 0; i < n; i++) { var x = A[i].codePointAt(0), y = B[i].codePointAt(0); if (x !== y) return x < y ? -1 : 1; }
+    return A.length - B.length; }
+  async function sha256(s) {
+    var b = await crypto.subtle.digest("SHA-256", enc.encode(s));
+    return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2, "0"); }).join("");
+  }
+  function listaOk(lista, ja) {
+    var vistos = new Set(ja || []), out = [];
+    lista.forEach(function (x) {
+      x = pyStrip(x);
+      if (nbytes(x) >= 4 && x.indexOf(TIL) < 0 && !vistos.has(x) && RE_OK.test(x)) { vistos.add(x); out.push(x); }
+    });
+    return out;
+  }
+  function odontoEntradas(d) { return listaOk(d.ODONTO_FRASES.concat(pySplit(d.ODONTO_TXT))); }
+  function montar(cam) {
+    var e = listaOk(cam.lingua);
+    e = e.concat(listaOk(cam.especialidade.entradas, e));
+    e = e.concat(listaOk(cam.pessoal, e));
+    return e.slice(0, 62 * 62);
+  }
+  async function fazer(cam, extra) {
+    var e = montar(cam);
+    var d = { camadas: cam, entradas: e, sha: await sha256(e.join("\n")) };
+    for (var k in (extra || {})) d[k] = extra[k];
+    return d;
+  }
+  async function fabrica(dados) {
+    return fazer({ lingua: pySplit(dados.LINGUA_TXT),
+                   especialidade: { nome: "odontologia", entradas: odontoEntradas(dados) }, pessoal: [] },
+                 { versao: 0, origem: "base de fabrica" });
+  }
+  var cache = {};
+  function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }   // no modo "u", "-" e "/" não podem ser escapados
+  function maquina(d) {
+    if (!cache[d.sha]) {
+      var e = d.entradas, ordem = e.map(function (_, i) { return i; });
+      ordem.sort(function (a, b) { return ncp(e[b]) - ncp(e[a]); });   // estável, como o sorted() do Python
+      var pos = {}; e.forEach(function (x, i) { pos[x] = i; });
+      cache[d.sha] = { pad: new RegExp("(?<!" + W + ")(?:" + ordem.map(function (i) { return esc(e[i]); }).join("|") + ")(?!" + W + ")", "gu"), pos: pos };
+    }
+    return cache[d.sha];
+  }
+  function comprimir(texto, d, achar) {
+    var m = maquina(d);
+    var corpo = texto.split(TIL).join(TIL + TIL).replace(m.pad, function (x) {
+      var p = m.pos[x]; return TIL + ALFA[Math.floor(p / 62)] + ALFA[p % 62]; });
+    var saida = CAB2 + d.sha.slice(0, 8) + "|" + corpo;
+    if (descomprimir(saida, achar || function () { return d; }) !== texto) throw new Error("compressao nao voltou igual; nada entregue");
+    return saida;
+  }
+  function descomprimir(pacote, achar) {
+    if (pacote.indexOf(CAB2) !== 0 || pacote.indexOf("|") < 0) throw new Error("isso nao e um texto CLXD2");
+    var resto = pacote.slice(CAB2.length), cut = resto.indexOf("|");
+    var sha8 = resto.slice(0, cut), corpo = resto.slice(cut + 1);
+    var d = achar(sha8);
+    if (!d) throw new Error("nao tenho o dicionario " + sha8 + " nesta Casa");
+    var e = d.entradas, out = [], i = 0;
+    while (i < corpo.length) {
+      var c = corpo[i];
+      if (c !== TIL) { out.push(c); i++; continue; }
+      if (corpo[i + 1] === TIL) { out.push(TIL); i += 2; continue; }
+      var a = corpo[i + 1], b = corpo[i + 2];
+      if (!a || !b || ALFA.indexOf(a) < 0 || ALFA.indexOf(b) < 0 || ALFA.indexOf(a) * 62 + ALFA.indexOf(b) >= e.length)
+        throw new Error("codigo quebrado na posicao " + i);
+      out.push(e[ALFA.indexOf(a) * 62 + ALFA.indexOf(b)]); i += 3;
+    }
+    return out.join("");
+  }
+  function estimarTokens(t) {
+    return (t.match(RE_TOK) || []).reduce(function (s, p) {
+      return s + (RE_ALNUM.test(p) ? Math.max(1, Math.floor((ncp(p) + 3) / 4)) : 1); }, 0);
+  }
+  function medir(texto, d) {
+    var c = comprimir(texto, d);
+    return { orig: nbytes(texto), dic: nbytes(c), tok_o: estimarTokens(texto), tok_d: estimarTokens(c),
+             igual: descomprimir(c, function () { return d; }) === texto, pacote: c };
+  }
+  // camada PESSOAL: entra o que se repete nas últimas 300 falas, sai o que parou de ser falado
+  async function aprender(atual, textos) {
+    textos = textos.slice(0, JANELA_PESSOAL);
+    var fixas = new Set(listaOk(atual.camadas.lingua).concat(atual.camadas.especialidade.entradas));
+    var conta = new Map();
+    textos.forEach(function (t) {
+      var pal = t.match(RE_PAL) || [];
+      for (var n = 1; n <= 4; n++) for (var i = 0; i + n <= pal.length; i++) {
+        var f = pal.slice(i, i + n).join(" ");
+        if ((n > 1 && t.indexOf(f) < 0) || fixas.has(f)) continue;
+        conta.set(f, (conta.get(f) || 0) + 1);
+      }
+    });
+    var ganho = [];
+    conta.forEach(function (c, f) { if (c >= 2) ganho.push([(nbytes(f) - 3) * c - ncp(f), f]); });
+    ganho.sort(function (x, y) { return x[0] - y[0] || cmpPy(x[1], y[1]); });
+    var pessoal = ganho.reverse().filter(function (g) { return g[0] > 0; }).map(function (g) { return g[1]; }).slice(0, MAX_PESSOAL);
+    var saiu = atual.camadas.pessoal.filter(function (f) { return pessoal.indexOf(f) < 0; }).length;
+    var cam = { lingua: atual.camadas.lingua, especialidade: atual.camadas.especialidade, pessoal: pessoal };
+    var d = await fazer(cam, { aprendeu_de: textos.length, sairam: saiu });
+    return { d: d, novo: d.sha !== atual.sha, saiu: saiu };
+  }
+  return { fabrica: fabrica, fazer: fazer, aprender: aprender, comprimir: comprimir, descomprimir: descomprimir,
+           medir: medir, estimarTokens: estimarTokens, listaOk: listaOk, sha256: sha256, CAB2: CAB2 };
+})();
+if (typeof module !== "undefined") module.exports = DIC5;
+</script>
+<script>// A Casa do Enclave na casca (v0.2, 09/11/2026) — porte do ENCLAVE_v5: 10 boxes, Arquivista que lê por dentro,
+// Black cifrada em 3 pedaços (2 de 3 reabrem), Doca que só cresce. Conceito: Sounavy. Engenharia: Claude.
+var CASA = (function () {
+  var PAPEL = {
+    "00": { cor: "Inox", guarda: "quarentena: a porta de entrada" },
+    "01": { cor: "Vermelho", guarda: "projetos, autobiografia, direitos autorais" },
+    "02": { cor: "Laranja", guarda: "dados licenciáveis, só com o seu OK" },
+    "03": { cor: "Amarelo", guarda: "trabalho, PDFs, textos, sessões" },
+    "04": { cor: "Verde", guarda: "rotinas, hábitos, o que foi aprendido" },
+    "05": { cor: "Azul", guarda: "fotos, áudio, memórias afetivas" },
+    "06": { cor: "Anil", guarda: "reservada: o papel você define" },
+    "07": { cor: "Violeta", guarda: "códigos e memória da GaIA" },
+    "08": { cor: "Black", guarda: "privado: nunca sai, 3 pedaços" },
+    "09": { cor: "Doca", guarda: "diário do Arquivista, só cresce" }
+  };
+  var PADROES_PRIVADOS = [["CPF", /\b\d{3}\.?\d{3}\.?\d{3}-\d{2}\b/], ["cartão", /\b(?:\d{4}[ -]){3}\d{4}\b/],
+    ["e-mail", /[\w.+-]+@[\w-]+\.[\w.]+/], ["telefone", /\(?\b\d{2}\)?\s?9\d{4}-\d{4}\b/], ["CEP", /\b\d{5}-\d{3}\b/]];
+  var PALAVRAS_PRIVADAS = ["senha", "password", "api_key", "apikey", "token", "segredo", "prontuario", "laudo", "paciente",
+    "contrato", "rg ", "conta bancaria", "pix", "cofre", "privado"];
+  var PALAVRAS_PROJETO = ["projeto", "gaia", "enclave", "livro", "tese", "capitulo", "clinica", "ideia", "arquitetura", "manifesto", "zenodo"];
+  var enc = new TextEncoder(), dec = new TextDecoder();
+  function semAcento(t) { return t.toLowerCase().normalize("NFD").replace(/\p{Mn}/gu, ""); }
+  function privados(texto) {
+    var achou = PADROES_PRIVADOS.filter(function (p) { return p[1].test(texto); }).map(function (p) { return p[0]; });
+    var t = semAcento(texto);
+    PALAVRAS_PRIVADAS.forEach(function (w) { if (t.indexOf(w) >= 0) achou.push("palavra “" + w.trim() + "”"); });
+    if (/sk-[A-Za-z0-9_-]{16,}/.test(texto)) achou.push("chave de API");
+    return achou;
+  }
+  function classificar(texto) {   // lê por dentro, nunca pelo nome
+    if (/^\s*(def |class |import |from \w+ import |function |const |#!|<!doctype|<html)/im.test(texto)) {
+      var reais = PADROES_PRIVADOS.filter(function (p) { return p[1].test(texto); }).map(function (p) { return p[0]; });
+      if (/sk-[A-Za-z0-9_-]{16,}/.test(texto)) reais.push("chave de API");
+      return reais.length ? ["08", "código com segredo: " + reais.slice(0, 3).join(", ")] : ["07", "código"];
+    }
+    var pv = privados(texto);
+    if (pv.length) return ["08", "privado: " + pv.slice(0, 3).join(", ")];
+    var t = semAcento(texto);
+    var achou = PALAVRAS_PROJETO.filter(function (w) { return new RegExp("\\b" + w + "\\b").test(t); });
+    if (achou.length) return ["01", "projeto: " + achou.slice(0, 3).join(", ")];
+    return ["03", "texto geral"];
+  }
+  function dois(n) { return String(n).padStart(2, "0"); }
+  function carimbo(d) { return d.getFullYear() + dois(d.getMonth() + 1) + dois(d.getDate()) + "-" + dois(d.getHours()) + dois(d.getMinutes()) + dois(d.getSeconds()); }
+  function nomeInfo(cx, quando, selo) { return "7" + cx + "-" + carimbo(quando) + "-" + selo.slice(0, 8); }
+  async function sha(bytes) { var b = await crypto.subtle.digest("SHA-256", bytes);
+    return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2, "0"); }).join(""); }
+  function b64(u) { var s = ""; u.forEach(function (x) { s += String.fromCharCode(x); }); return btoa(s); }
+  function deb(s) { return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); }); }
+  function xor(a, b) { var o = new Uint8Array(a.length); for (var i = 0; i < a.length; i++) o[i] = a[i] ^ b[i]; return o; }
+  async function chaveDe(senha, sal) {
+    var base = await crypto.subtle.importKey("raw", enc.encode(senha), "PBKDF2", false, ["deriveKey"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", salt: sal, iterations: 200000, hash: "SHA-256" }, base,
+      { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+  }
+  async function trancar(senha, dados) {     // pacote = sal(16) + iv(12) + cifra AES-GCM
+    var sal = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+    var ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, await chaveDe(senha, sal), dados));
+    var p = new Uint8Array(28 + ct.length); p.set(sal); p.set(iv, 16); p.set(ct, 28); return p;
+  }
+  async function destrancar(senha, p) {
+    return new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv: p.slice(16, 28) }, await chaveDe(senha, p.slice(0, 16)), p.slice(28)));
+  }
+  function dividirEm3(p) {                   // igual ao v5: A, B e A^B — quaisquer 2 reconstroem
+    var m = Math.ceil(p.length / 2), A = p.slice(0, m), B = new Uint8Array(m); B.set(p.slice(m));
+    return [A, B, xor(A, B)];
+  }
+  function juntar2(ped, tam) {
+    var A = ped[1] || xor(ped[2], ped[3]), B = ped[2] || xor(ped[1], ped[3]);
+    var o = new Uint8Array(A.length + B.length); o.set(A); o.set(B, A.length); return o.slice(0, tam);
+  }
+  function nova() { return { itens: [], doca: [], dics: [] }; }
+  async function arquivar(casa, texto, senha, quando) {
+    quando = quando || new Date();
+    var cl = classificar(texto), cx = cl[0], dados = enc.encode(texto), h = await sha(dados);
+    var dup = casa.itens.find(function (i) { return i.sha === h && i.cx === cx; });
+    if (dup) return { status: "STOP", item: dup, motivo: cl[1] };
+    var it = { cx: cx, nome: nomeInfo(cx, quando, h), quando: quando.toISOString(), sha: h, tamanho: dados.length, motivo: cl[1] };
+    if (cx === "08") {
+      var pac = await trancar(senha, dados), ped = dividirEm3(pac);
+      it.black = { p: ped.map(b64), tam: pac.length, selo_pacote: await sha(pac) };
+    } else { it.texto = texto; }
+    casa.itens.push(it);
+    return { status: "GO", item: it, motivo: cl[1] };
+  }
+  async function reabrirBlack(it, senha, sem) {
+    var ped = {};
+    [1, 2, 3].forEach(function (i) { if (i !== sem) ped[i] = deb(it.black.p[i - 1]); });
+    var pac = juntar2(ped, it.black.tam);
+    if ((await sha(pac)) !== it.black.selo_pacote) throw new Error("pedaço adulterado");
+    var dados = await destrancar(senha, pac);
+    if ((await sha(dados)) !== it.sha) throw new Error("selo não confere");
+    return dec.decode(dados);
+  }
+  async function confere(it) { return it.cx === "08" ? true : (await sha(enc.encode(it.texto))) === it.sha; }
+  function doca(casa, linhas) { casa.doca.push({ ts: new Date().toISOString(), linhas: linhas }); }
+  function falasRecentes(casa) {
+    return casa.itens.filter(function (i) { return i.cx !== "08" && i.texto && !privados(i.texto).length; })
+      .sort(function (a, b) { return a.quando < b.quando ? 1 : -1; }).map(function (i) { return i.texto; });
+  }
+  return { PAPEL: PAPEL, classificar: classificar, privados: privados, arquivar: arquivar, reabrirBlack: reabrirBlack,
+           confere: confere, doca: doca, nova: nova, falasRecentes: falasRecentes, semAcento: semAcento };
+})();
+if (typeof module !== "undefined") module.exports = CASA;
+</script>
+<script>
+(function(){
+var $=function(id){return document.getElementById(id)};
+var KEY="enclave.casca.v02";
+var EXEMPLO="Voltou com bruxismo e dor na articulação temporomandibular, então vamos fazer a placa miorrelaxante e rever o plano de tratamento.";
+var DADOS={LINGUA_TXT:LINGUA_TXT,ODONTO_TXT:ODONTO_TXT,ODONTO_FRASES:ODONTO_FRASES};
+var casa=CASA.nova(), fab=null, versoes=[], aberta="03", ultimoClx="";
+try{var s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s&&s.itens)casa=s;}catch(e){}
+function salvar(){try{localStorage.setItem(KEY,JSON.stringify(casa))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var tm;function aviso(m){$("toast").textContent=m;clearTimeout(tm);tm=setTimeout(function(){$("toast").textContent=""},5000)}
+function atual(){return versoes[versoes.length-1]}
+function achar(sha8){for(var i=versoes.length-1;i>=0;i--)if(versoes[i].sha.indexOf(sha8)===0)return versoes[i];return null}
+async function carregarDics(){
+  fab=await DIC5.fabrica(DADOS); versoes=[fab];
+  for(var i=0;i<casa.dics.length;i++){var v=casa.dics[i];
+    var d=await DIC5.fazer({lingua:fab.camadas.lingua,especialidade:fab.camadas.especialidade,pessoal:v.pessoal},{versao:v.versao,quando:v.quando});
+    versoes.push(d);}
+}
+function seloDic(){var d=atual(),c=d.camadas;
+  $("selo-dic").textContent="Dicionário v"+(d.versao||0)+" · SHA "+d.sha.slice(0,8)+" · língua "+c.lingua.length+" + "+c.especialidade.nome+" "+c.especialidade.entradas.length+" + pessoal "+c.pessoal.length;}
+function previa(){
+  var t=$("entrada").value; $("exemplo").hidden=t!==EXEMPLO;
+  if(!t.trim()){$("prev").innerHTML='<span class="hint">Escreva ou dite algo para ver para onde vai.</span>';ultimoClx="";return}
+  var cl=CASA.classificar(t), p=CASA.PAPEL[cl[0]], h='<div class="destino"><span class="dot" style="background:var(--c'+cl[0]+')"></span>Vai para '+cl[0]+' '+p.cor+'</div><div class="hint">Por quê: '+esc(cl[1])+'</div>';
+  if(CASA.privados(t).length){h+='<div class="aviso">Tem dado privado: não comprimo para viajar. Vai cifrado para a Black.</div>';ultimoClx="";}
+  else{try{var m=DIC5.medir(t,atual()),pc=function(a,b){return a?((b-a)/a*100>0?"+":"")+Math.round((b-a)/a*100)+"%":"-"};
+    ultimoClx=m.pacote;
+    h+='<div class="mono">'+esc(m.pacote)+'</div><div class="medidas">Bytes '+m.orig+' → '+m.dic+' ('+pc(m.orig,m.dic)+') · tokens (estimativa) '+m.tok_o+' → '+m.tok_d+' ('+pc(m.tok_o,m.tok_d)+') · volta igual: '+(m.igual?"sim":"NÃO")+'</div>';
+  }catch(e){h+='<div class="aviso">'+esc(e.message)+'</div>';ultimoClx="";}}
+  $("prev").innerHTML=h;
+}
+function grade(){
+  var cont={};casa.itens.forEach(function(i){cont[i.cx]=(cont[i.cx]||0)+1});cont["09"]=casa.doca.length;
+  $("grade").innerHTML=Object.keys(CASA.PAPEL).map(function(cx){var p=CASA.PAPEL[cx];
+    return '<button class="box" data-cx="'+cx+'" aria-pressed="'+(cx===aberta)+'"><span class="top"><span class="dot" style="background:var(--c'+cx+')"></span><span class="num">'+cx+'</span></span><span class="cor">'+p.cor+'</span><span class="n">'+(cont[cx]||0)+'</span><span class="g">'+p.guarda+'</span></button>'}).join("");
+  var p=CASA.PAPEL[aberta], h="";
+  if(aberta==="00")h='<p class="hint">O Inox fica vazio: a cada "Guardar" o Arquivista já levou tudo para a caixa certa.</p>';
+  else if(aberta==="09")h='<p class="hint">A Doca é o diário. Abra a gaveta "Doca" abaixo.</p>';
+  else{var its=casa.itens.filter(function(i){return i.cx===aberta}).sort(function(a,b){return a.quando<b.quando?1:-1});
+    h=its.length?its.map(function(i){return '<div class="it"><span class="nome">'+esc(i.nome)+'</span><span class="tx">'+(i.cx==="08"?"🔒 cifrado em 3 pedaços":esc(i.texto.slice(0,240)))+'</span><span class="por">'+esc(i.motivo||"")+'</span></div>'}).join(""):'<p class="hint">A caixa '+p.cor+' está vazia.</p>';}
+  $("dentro").innerHTML='<div class="lista"><span class="tag" style="margin-top:6px">'+aberta+' · '+p.cor+'</span>'+h+'</div>';
+}
+$("grade").addEventListener("click",function(e){var b=e.target.closest("[data-cx]");if(!b)return;aberta=b.dataset.cx;grade()});
+function blackLista(){var its=casa.itens.filter(function(i){return i.cx==="08"});
+  $("black-lista").innerHTML=its.length?its.map(function(i,k){return '<div class="it"><span class="nome">'+esc(i.nome)+'</span><span class="por">'+esc(i.motivo)+'</span><div class="row"><button class="btn ghost" data-reabre="'+esc(i.nome)+'">Reabrir com 2 de 3</button></div><span class="tx" id="rb-'+k+'"></span></div>'}).join(""):'<p class="hint">Nada na Black ainda.</p>';}
+$("black-lista").addEventListener("click",async function(e){var b=e.target.closest("[data-reabre]");if(!b)return;
+  var it=casa.itens.find(function(i){return i.nome===b.dataset.reabre}),sem=1+Math.floor(Math.random()*3),out=b.parentNode.nextElementSibling;
+  try{var t=await CASA.reabrirBlack(it,$("senha").value,sem);out.textContent="Reaberto sem o pedaço "+sem+": "+t;setTimeout(function(){out.textContent=""},15000)}
+  catch(err){out.textContent="Não reabriu: "+(err.message||"senha errada ou pedaço mexido")}});
+function docaLista(){$("doca").innerHTML=casa.doca.length?casa.doca.slice().reverse().slice(0,40).map(function(d){return '<div class="it"><span class="nome">'+d.ts.slice(0,19).replace("T"," ")+'</span><span class="tx">'+d.linhas.map(esc).join("<br>")+'</span></div>'}).join(""):'<p class="hint">A Doca ainda está vazia.</p>';}
+function versoesLista(){$("versoes").innerHTML=versoes.slice().reverse().map(function(d){return '<div class="it"><span class="nome">v'+(d.versao||0)+' · '+d.sha.slice(0,8)+(d===fab?" · fábrica (igual ao ENCLAVE_v5)":"")+'</span><span class="por">pessoal '+d.camadas.pessoal.length+(d.camadas.pessoal.length?": "+esc(d.camadas.pessoal.slice(0,6).join(" · "))+(d.camadas.pessoal.length>6?" …":""):"")+'</span></div>'}).join("");}
+function tudo(){seloDic();previa();grade();blackLista();docaLista();versoesLista();salvar()}
+
+$("guardar").addEventListener("click",async function(){
+  var t=$("entrada").value; if(!t.trim()){aviso("Nada para guardar.");return}
+  var r=await CASA.arquivar(casa,t,$("senha").value), cx=r.item.cx;
+  if(r.status==="STOP"){aviso("Isso já estava guardado na caixa "+CASA.PAPEL[cx].cor+".");return}
+  CASA.doca(casa,["Inox → "+cx+" "+CASA.PAPEL[cx].cor+" ("+r.motivo+")","Nome: "+r.item.nome]);
+  aberta=cx; $("entrada").value=""; tudo(); aviso("Guardado na caixa "+CASA.PAPEL[cx].cor+". Nome: "+r.item.nome);
+});
+$("copiar").addEventListener("click",function(){copiar(ultimoClx,"CLXD2 copiado.")});
+$("aprender").addEventListener("click",async function(){
+  var r=await DIC5.aprender(atual(),CASA.falasRecentes(casa));
+  if(!r.novo){aviso("Nada novo para aprender ainda: fale mais vezes as mesmas expressões.");$("g-dic").open=true;return}
+  var v=(atual().versao||0)+1; r.d.versao=v; versoes.push(r.d);
+  casa.dics.push({versao:v,sha:r.d.sha,pessoal:r.d.camadas.pessoal,quando:new Date().toISOString(),anterior:versoes[versoes.length-2].sha.slice(0,8)});
+  CASA.doca(casa,["Dicionário v"+v+" "+r.d.sha.slice(0,8)+": pessoal "+r.d.camadas.pessoal.length+" (saíram "+r.saiu+")"]);
+  tudo();aviso("Dicionário v"+v+": aprendeu "+r.d.camadas.pessoal.length+" expressões suas.");
+});
+$("abrir").addEventListener("click",function(){var t=$("abrir-in").value.trim();
+  try{$("abrir-out").textContent=DIC5.descomprimir(t.slice(t.indexOf(DIC5.CAB2)),achar)}catch(e){$("abrir-out").textContent="Não abriu: "+e.message}});
+$("exportar").addEventListener("click",function(){copiar(JSON.stringify({enclave:"casca-v0.2",data:new Date().toISOString(),casa:casa}),"Casa copiada. Cole no Drive.")});
+$("importar-btn").addEventListener("click",async function(){
+  try{var c=JSON.parse($("importar").value).casa,n=0;
+    c.itens.forEach(function(i){if(!casa.itens.some(function(x){return x.nome===i.nome})){casa.itens.push(i);n++}});
+    c.doca.forEach(function(d){if(!casa.doca.some(function(x){return x.ts===d.ts}))casa.doca.push(d)});
+    c.dics.forEach(function(v){if(!casa.dics.some(function(x){return x.sha===v.sha}))casa.dics.push(v)});
+    casa.dics.sort(function(a,b){return a.versao-b.versao});await carregarDics();
+    $("importar").value="";tudo();aviso(n+" itens novos somados. Nada foi apagado.");
+  }catch(e){aviso("Não reconheci o texto colado. Cole exatamente o que o botão Copiar a Casa gerou.")}
+});
+function copiar(t,msg){if(!t){aviso("Nada para copiar.");return}
+  try{navigator.clipboard.writeText(t).then(function(){aviso(msg)},function(){fb(t)})}catch(e){fb(t)}}
+function fb(t){$("g-levar").open=true;$("importar").value=t;$("importar").select();aviso("Selecionei o texto na caixa de levar a Casa. Toque em Copiar no menu.")}
+
+$("testar").addEventListener("click",async function(){
+  var linhas=[],ok=0,tot=0;function t(c,m){tot++;if(c)ok++;linhas.push('<span class="'+(c?"ok":"no")+'">'+(c?"✓ ":"✗ ")+esc(m)+'</span>')}
+  $("res").textContent="Rodando…";
+  try{
+    var d=await DIC5.fabrica(DADOS);
+    t(d.sha.indexOf("27f35b93")===0,"dicionário de fábrica igual ao ENCLAVE_v5 (SHA "+d.sha.slice(0,8)+")");
+    t(d.camadas.lingua.length===1800&&d.camadas.especialidade.entradas.length===176,"língua 1800 + odontologia 176");
+    var m=DIC5.medir("a paciente voltou com bruxismo e dor na articulação temporomandibular, vamos fazer a placa miorrelaxante",d);
+    t(m.igual&&m.orig===106&&m.dic===60,"fala de consultório: "+m.orig+" → "+m.dic+" bytes, volta igual");
+    var dif=["~ ~~ ~0a ~zz til","","linha\n\ttab  dois","emoji 😀 é ã õ ç","R$ 10, 50% — ação","EnclaveEnclaveEnclave"];
+    t(dif.every(function(x){return DIC5.descomprimir(DIC5.comprimir(x,d),function(){return d})===x}),"sem perda: "+dif.length+" textos difíceis voltam iguais");
+    var c=CASA.nova(),s="teste-33",casos=[["Paciente Maria, laudo, CPF 123.456.789-09","08","privado vai para a Black"],
+      ["import os\ndef gaia():\n    senha = input()\n    return 33\n","07","código vai para a Violeta"],
+      ["lista de compras: pao, leite, cafe","03","texto comum vai para a Amarela"],["Ideia para o livro do Enclave: capitulo 3","01","projeto vai para a Vermelha"]];
+    for(var i=0;i<casos.length;i++){var r=await CASA.arquivar(c,casos[i][0],s);t(r.item.cx===casos[i][1],casos[i][2])}
+    t((await CASA.arquivar(c,"lista de compras: pao, leite, cafe",s)).status==="STOP","repetido: Stop (não duplica)");
+    var b=c.itens.find(function(i){return i.cx==="08"});
+    for(var sem=1;sem<=3;sem++)t((await CASA.reabrirBlack(b,s,sem)).indexOf("123.456.789-09")>=0,"Black reabre sem o pedaço "+sem);
+    var errou=false;try{await CASA.reabrirBlack(b,"errada",3)}catch(e){errou=true}t(errou,"senha errada não abre a Black");
+    var a=JSON.parse(JSON.stringify(c.itens.find(function(i){return i.cx==="03"})));a.texto+=" mexido";t(!(await CASA.confere(a)),"texto mexido por fora: o selo acusa");
+    var falas=[0,1,2,3].map(function(i){return "a gente precisa deixar o Enclave funcionando no iPhone pra inclusão digital #"+i});
+    for(i=0;i<falas.length;i++)await CASA.arquivar(c,falas[i],s);
+    var ap=await DIC5.aprender(d,CASA.falasRecentes(c));
+    t(ap.novo&&ap.d.camadas.pessoal.length>0,"pessoal aprendeu "+ap.d.camadas.pessoal.length+" expressões");
+    t(!ap.d.entradas.some(function(e){return e.indexOf("123")>=0||e.indexOf("Maria")>=0}),"a Black não entrou no dicionário");
+    var velho=DIC5.comprimir(falas[0],d);t(DIC5.descomprimir(velho,function(x){return x===d.sha.slice(0,8)?d:ap.d})===falas[0],"texto da versão antiga ainda abre");
+    errou=false;try{DIC5.descomprimir("CLXD2:deadbeef|x",function(){return null})}catch(e){errou=true}t(errou,"dicionário desconhecido acusa (não inventa)");
+  }catch(e){linhas.push('<span class="no">✗ o teste parou: '+esc(e.message)+'</span>')}
+  $("res").innerHTML="<b>"+ok+" de "+tot+"</b>\n"+linhas.join("\n");
+  CASA.doca(casa,["Autoteste: "+ok+" de "+tot]);docaLista();salvar();
+});
+
+$("entrada").value=EXEMPLO;
+$("entrada").addEventListener("input",previa);
+carregarDics().then(tudo).catch(function(e){$("selo-dic").textContent="O dicionário não carregou: "+e.message});
+})();
+</script>
